@@ -1,0 +1,37 @@
+[project]
+name = "maily-public-api"
+version = "1.0.0"
+description = "API pública de MailySoft: catálogo de suscripciones de solo lectura y sin autenticación"
+requires-python = ">=3.14"
+dependencies = [
+    "asyncpg>=0.30",
+    "fastapi>=0.143",
+    "pydantic-settings>=2.6",
+    "sqlalchemy[asyncio]>=2.0,<2.1",
+    "uvicorn>=0.30",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28",
+    "pytest>=8.3",
+    "pytest-asyncio>=1.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    # Auto-applied by `pytest_collection_modifyitems` (tests/conftest.py) to every test that needs
+    # a real PostgreSQL with the mailySoft-DB schema. Excluded by default (Principle V): `uv run
+    # pytest` runs only what needs no database; `uv run pytest -m ""` runs everything (the gate
+    # before merging into `main`).
+    "slow: necesita PostgreSQL 18 real con el esquema de mailySoft-DB",
+]
+addopts = "-m 'not slow'"

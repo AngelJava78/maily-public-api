@@ -1,0 +1,41 @@
+services:
+  # API pública: `docker compose up -d --build api`. No levanta ninguna base de datos propia: se une a
+  # la red del Compose de mailySoft-DB y lee su base compartida local (`db-local`) con el usuario de
+  # solo lectura de DATABASE_URL (.env).
+  api:
+    # El commit y la fecha del build se pasan a la imagen (`/info` los publica); sin ellos valen
+    # `unknown`. No se repiten en `environment`: taparían el valor que la imagen lleva.
+    build:
+      context: .
+      args:
+        APP_COMMIT_SHA: ${APP_COMMIT_SHA:-}
+        APP_BUILD_DATE: ${APP_BUILD_DATE:-}
+    env_file: .env
+    ports:
+      - "8006:8000"
+    networks:
+      - mailysoft-db_default
+    restart: unless-stopped
+
+  # Base desechable de las pruebas `slow` (Principio V): `docker compose --profile test up -d db-test`.
+  # Solo escucha en 127.0.0.1 y guarda sus datos en memoria.
+  db-test:
+    image: postgres:18
+    profiles: ["test"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: maily_public_api_test
+    ports:
+      - "127.0.0.1:5436:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d maily_public_api_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  mailysoft-db_default:
+    external: true

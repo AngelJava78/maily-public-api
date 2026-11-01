@@ -1,0 +1,17 @@
+.env
+.env.*
+.venv/
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+tests/
+specs/
+.specify/
+.claude/
+docs/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+*.log
