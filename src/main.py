@@ -1,8 +1,10 @@
-"""FastAPI application: `uvicorn src.main:create_app_from_environment --factory`.
+"""FastAPI application: `uvicorn src.main:app`, as in maily-system-api.
 
 `create_app(settings)` has no side effects (it reads no variable and opens no connection: the engine
 connects on first use), so the tests build the application with any configuration. The factory
-`create_app_from_environment()` is the only entry point that reads the environment (research R10).
+`create_app_from_environment()` is the only entry point that reads the environment (research R10):
+`app` calls it the first time it is asked for, so importing this module reads no variable. The image
+calls the factory directly (`uvicorn src.main:create_app_from_environment --factory`).
 """
 
 import logging
@@ -100,3 +102,12 @@ def create_app_from_environment() -> FastAPI:
         logger.critical("%s", error)
         raise SystemExit(1) from None
     return create_app(settings)
+
+
+def __getattr__(name: str) -> FastAPI:
+    """`src.main:app` is built from the environment on first access, not on import (PEP 562)."""
+    if name != "app":
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    application = create_app_from_environment()
+    globals()["app"] = application  # Later accesses get the same application.
+    return application

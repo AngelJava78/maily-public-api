@@ -188,7 +188,9 @@ especificación dejó al plan. Formato: decisión, justificación y alternativas
   punto de entrada es la fábrica `src.main:create_app_from_environment` (uvicorn `--factory`): carga toda
   la configuración, junta todos los errores y, si hay alguno, detiene el arranque con un mensaje que nombra
   las variables, nunca sus valores; si no, llama a `create_app(settings)`. Así la documentación
-  (`DOCS_ENABLED`) y los orígenes de CORS se conocen al construir la aplicación.
+  (`DOCS_ENABLED`) y los orígenes de CORS se conocen al construir la aplicación. En local también
+  funciona `uvicorn src.main:app`, como en maily-system-api: `app` llama a la fábrica la primera vez que
+  se pide (`__getattr__` del módulo), así que importar `src.main` sigue sin leer variables.
 - **Justificación**: los nombres siguen las convenciones de maily-system-api (`DATABASE_URL`,
   `CORS_ALLOWED_ORIGINS`, `HEALTH_READY_TIMEOUT_SECONDS`, `APP_*`). La base no disponible no impide
   arrancar (el engine se crea en el primer uso).

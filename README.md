@@ -66,6 +66,17 @@ docker compose --profile test down
 3. `docker compose up -d --build api` → `http://localhost:8006/api/v1/subscriptions` y
    `http://localhost:8006/docs`.
 
+Sin Docker, igual que maily-system-api:
+
+```sh
+uv run uvicorn src.main:app --port 8006
+```
+
+Lee el `.env`. Como corre fuera de la red de Docker, `DATABASE_URL` apunta al puerto que la base publica
+en tu máquina (`127.0.0.1:5434` con el Compose de mailySoft-DB), no a `db-local:5432`. Si Windows
+bloquea el ejecutable `uvicorn.exe` del entorno virtual (Control de aplicaciones), usa
+`uv run python -m uvicorn src.main:app --port 8006`.
+
 ## Stack
 
 Python 3.14, FastAPI, uvicorn, SQLAlchemy 2.0 async con asyncpg, Pydantic v2 con pydantic-settings,
