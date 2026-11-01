@@ -196,8 +196,14 @@ caída; `/docs` y `/openapi.json` responden 404 con `DOCS_ENABLED=false`.
 - [X] T063 [P] Escribir `tests/unit/test_layers.py` (Principio I y IX): con `ast`, ningún módulo de `src/repositories/` importa `src.services` ni `src.routers`; ninguno de `src/services/` importa `src.routers`; `src/models/` no importa `src.dtos`, `src.services`, `src.repositories` ni `src.routers`; ningún módulo de `src/` importa `httpx` ni `alembic`
 - [X] T064 [P] Escribir `README.md` en español: propósito del servicio, cómo correr pruebas (`uv run pytest` y `uv run pytest -m ""` con `db-test`), cómo levantarlo en local (puerto 8006, red de mailySoft-DB), variables de entorno (enlace a `contracts/environment.md`) y dependencias con mailySoft-DB (FR-027 y `docs/database/read-only-role.sql`)
 - [X] T065 Construir la imagen (`docker build -t maily-public-api .`) y comprobar que `docker run --rm maily-public-api python -c "import httpx"` y `... "import pytest"` fallan, y que `docker run --rm maily-public-api` sin variables termina con un error que nombra `DATABASE_URL` y `CORS_ALLOWED_ORIGINS` sin mostrar valores
-- [ ] T066 Puerta antes de `main` (Principio V; **bloqueada por FR-027**): `docker compose --profile test up -d db-test` y `uv run pytest -m ""` en verde; registrar el resultado. No forma parte de `/speckit-implement`
+- [X] T066 Puerta antes de `main` (Principio V; **bloqueada por FR-027**): `docker compose --profile test up -d db-test` y `uv run pytest -m ""` en verde; registrar el resultado. No forma parte de `/speckit-implement`. Resultado (2026-11-01): 144 pruebas en verde (122 por defecto + 22 `slow`), con el esquema de mailySoft-DB de la rama `recovery/rebuild-from-expired-azure` (`d7a245e`, incluye V6 y V7)
 - [ ] T067 Ejecutar los escenarios 1–14 y la sección 6 de `specs/001-public-subscriptions-catalog/quickstart.md` (requiere mailySoft-DB con FR-027 y el rol); el escenario de la sección 5 (SC-005), en el ambiente compartido de desarrollo
+
+**Excepción registrada (2026-11-01)**: la feature se integró a `main` por decisión explícita del
+responsable sin cumplir la regla de la constitución que exige integrar y desplegar antes en
+mailySoft-DB lo que la feature necesita. En ese momento V6 y V7 solo estaban en la rama
+`recovery/rebuild-from-expired-azure` de mailySoft-DB y el usuario `maily_public_api` no existía
+allí. Hasta que ambos estén en `main` de mailySoft-DB y desplegados, el servicio no debe desplegarse.
 
 ---
 
